@@ -1,2 +1,3 @@
 # HolyMake
-In search for the perfect Makefile
+
+In search for the perfect Makefile.
