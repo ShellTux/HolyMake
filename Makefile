@@ -307,27 +307,27 @@ make.snippets: Makefile
 	@echo snippet Template \"Makefile Template\" | tee $@
 
 	sed 's|^|\t|' $< | tee --append $@
-	sed -i '0,/assets/s//$${1:assets}/' $@
-	sed -i '0,/docs/s//$${2:docs}/' $@
+	sed -i '0,/$(ASSETS_DIR)/s//$${1:$(ASSETS_DIR)}/' $@
+	sed -i '0,/$(DOCS_DIR)/s//$${2:$(DOCS_DIR)}/' $@
 	sed -i '0,/$$(shell pwd)\/include/s//$${3:$$(shell pwd)\/include}/' $@
-	sed -i '0,/obj/s//$${4:obj}/' $@
-	sed -i '0,/pandoc/s//$${5:pandoc}/' $@
-	sed -i '0,/src/s//$${6:src}/' $@
-	sed -i '0,/build/s//$${7:build}/' $@
-	sed -i '0,/hello-world factorial/s//$${8:target}/' $@
-	sed -i '0,/archive.zip/s//$${9:archive.zip}/' $@
-	sed -i '0,/installation-manual.pdf/s//$${10:installation-manual.pdf}/' \
+	sed -i '0,/$(OBJ_DIR)/s//$${4:$(OBJ_DIR)}/' $@
+	sed -i '0,/$(PANDOC_DATA_DIR)/s//$${5:$(PANDOC_DATA_DIR)}/' $@
+	sed -i '0,/$(SRC_DIR)/s//$${6:$(SRC_DIR)}/' $@
+	sed -i '0,/$(TARGETS_DIR)/s//$${7:$(TARGETS_DIR)}/' $@
+	sed -i '0,/$(TARGETS)/s//$${8:$(TARGETS)}/' $@
+	sed -i '0,/$(ARCHIVE)/s//$${9:$(ARCHIVE)}/' $@
+	sed -i '0,/$(INSTALLATION_MANUAL)/s//$${10:$(INSTALLATION_MANUAL)}/' \
 		$@
-	sed -i '0,/presentation.pdf/s//$${11:presentation.pdf}/' $@
-	sed -i '0,/report.pdf/s//$${12:report.pdf}/' $@
-	sed -i '0,/user-manual.pdf/s//$${13:user-manual.pdf}/' $@
-	sed -i '0,/onehalfdark/s//$${14:onehalfdark}/' $@
-	sed -i '0,/venv/s//$${15:venv}/' $@
-	sed -i '0,/gcc/s//$${16:gcc}/' $@
-	sed -i '0,/g++/s//$${17:g++}/' $@
+	sed -i '0,/$(PRESENTATION)/s//$${11:$(PRESENTATION)}/' $@
+	sed -i '0,/$(REPORT)/s//$${12:$(REPORT)}/' $@
+	sed -i '0,/$(USER_MANUAL)/s//$${13:$(USER_MANUAL)}/' $@
+	sed -i '0,/onehalfdark/s//$${14}/' $@
+	sed -i '0,/$(VENV)/s//$${15:$(VENV)}/' $@
+	sed -i '0,/$(CC)/s//$${16:$(CC)}/' $@
+	sed -i '0,/$(CCP)/s//$${17:$(CCP)}/' $@
 	sed -i '0,/-Wall -Wextra -Werror/s//$${18:-Wall -Wextra -Werror}/' $@
 	# TODO: Add Links
-	sed -i '0,/xdg-open/s//$${19:xdg-open}/' $@
+	sed -i '0,/$(OPEN)/s//$${19:$(OPEN)}/' $@
 	sed -i '0,/-g -Og/s//$${20:-g -Og}/' $@
 	sed -i '0,/-DDEBUG=1/s//$${21:-DDEBUG=1}/' $@
 
