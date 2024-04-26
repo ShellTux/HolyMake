@@ -141,14 +141,6 @@ PRINT-MACROS:
 		| grep -v "^#\|^--" \
 		| sort
 
-define WARNING_MESSAGE
-\033[33m[WARNING]\033[0m: Current working directory of Makefile contains spaces.
-This is known to cause bugs.
-
-\033[36m[INFO]\033[0m:    "$(shell pwd)"
-Please Try compiling by making sure the full path to this Makefile does not contain spaces.
-endef
-
 .PHONY: warning
 warning:
 ifneq ($(shell pwd | grep --count ' '),0)
