@@ -20,6 +20,8 @@ HEADERS  = $(shell find $(INCLUDE_DIRS) \
 	   -name "*.hpp" \
 	   2>/dev/null | tr '\n' ' ')
 
+GITIGNORE := $(OBJ_DIR) $(TARGETS_DIR) $(TARGETS)
+
 # }}}
 
 # Variables - Documentation {{{
@@ -50,6 +52,8 @@ endif
 DOCUMENTS     := $(REPORT) $(USER_MANUAL) $(INSTALLATION_MANUAL)
 PRESENTATIONS := $(PRESENTATION)
 
+GITIGNORE += $(DOCUMENTS) $(PRESENTATIONS)
+
 # }}}
 
 # Variables - Python {{{
@@ -57,6 +61,8 @@ PRESENTATIONS := $(PRESENTATION)
 VENV   := venv
 PYTHON := ./$(VENV)/bin/python
 PIP    := ./$(VENV)/bin/pip
+
+GITIGNORE += $(VENV)
 
 # }}}
 
@@ -166,7 +172,8 @@ clang-format:
 setup: .clangd
 
 .PHONY: .clangd
-.clangd:
+.clangd: GITIGNORE += .clangd
+.clangd: .gitignore
 	rm --force $@
 
 	@echo Diagnostics: | tee --append $@
@@ -177,10 +184,22 @@ setup: .clangd
 
 	@for flag in $(CFLAGS) ; do echo "    - $$flag" | tee --append $@ ; done
 
-	-test -f .gitignore \
-		&& ! grep --silent "^$@$$" .gitignore \
-		&& echo $@ >> .gitignore \
-		|| true
+.gitignore:
+ifneq ($(shell git rev-parse --show-toplevel 2>/dev/null),)
+	$(eval APPEND_GITIGNORE := tr ' ' '\n' | tee --append $@)
+	@echo $(GITIGNORE) | tr ' ' '\n' | tee $@
+	@echo | $(APPEND_GITIGNORE)
+
+	$(eval IGNORE_API = https://www.toptal.com/developers/gitignore/api)
+
+ifneq ($(SOURCES),)
+	curl --silent --location $(IGNORE_API)/c >> $@
+endif
+ifneq ($(VENV),)
+	curl --silent --location $(IGNORE_API)/python >> $@
+endif
+
+endif
 
 
 .PHONY: clean
@@ -193,8 +212,6 @@ clean:
 	rm --force $(TARGETS) $(DOCUMENTS) $(PRESENTATIONS)
 	rm --recursive --force $(OBJ_DIR) $(VENV)
 	find . -type f -name '*.pyc' -delete
-
-# TODO: Add .gitignore create rule
 
 help:
 	man
@@ -251,7 +268,7 @@ factorial: $(_SOURCES:%=$(OBJ_DIR)/$(SRC_DIR)/%.cpp.o)
 
 # Rules - Python {{{
 
-$(VENV): $(VENV)/bin/activate
+$(VENV): $(VENV)/bin/activate .gitignore
 
 $(VENV)/bin/activate: requirements.txt
 	python3 -m venv $(VENV)
