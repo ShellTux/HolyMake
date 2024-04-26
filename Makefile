@@ -303,6 +303,36 @@ ifneq ($(VENV),)
 	curl --silent --location $(IGNORE_API)/python >> $@
 endif
 
+make.snippets: Makefile
+	@echo snippet Template \"Makefile Template\" | tee $@
+
+	sed 's|^|\t|' $< | tee --append $@
+	sed -i '0,/assets/s//$${1:assets}/' $@
+	sed -i '0,/docs/s//$${2:docs}/' $@
+	sed -i '0,/$$(shell pwd)\/include/s//$${3:$$(shell pwd)\/include}/' $@
+	sed -i '0,/obj/s//$${4:obj}/' $@
+	sed -i '0,/pandoc/s//$${5:pandoc}/' $@
+	sed -i '0,/src/s//$${6:src}/' $@
+	sed -i '0,/build/s//$${7:build}/' $@
+	sed -i '0,/hello-world factorial/s//$${8:target}/' $@
+	sed -i '0,/archive.zip/s//$${9:archive.zip}/' $@
+	sed -i '0,/installation-manual.pdf/s//$${10:installation-manual.pdf}/' \
+		$@
+	sed -i '0,/presentation.pdf/s//$${11:presentation.pdf}/' $@
+	sed -i '0,/report.pdf/s//$${12:report.pdf}/' $@
+	sed -i '0,/user-manual.pdf/s//$${13:user-manual.pdf}/' $@
+	sed -i '0,/onehalfdark/s//$${14:onehalfdark}/' $@
+	sed -i '0,/venv/s//$${15:venv}/' $@
+	sed -i '0,/gcc/s//$${16:gcc}/' $@
+	sed -i '0,/g++/s//$${17:g++}/' $@
+	sed -i '0,/-Wall -Wextra -Werror/s//$${18:-Wall -Wextra -Werror}/' $@
+	# TODO: Add Links
+	sed -i '0,/xdg-open/s//$${19:xdg-open}/' $@
+	sed -i '0,/-g -Og/s//$${20:-g -Og}/' $@
+	sed -i '0,/-DDEBUG=1/s//$${21:-DDEBUG=1}/' $@
+
+	sed -i 's|\$$\$$|\\$$\\$$|g' $@
+
 endif
 
 
