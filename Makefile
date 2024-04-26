@@ -171,9 +171,8 @@ CheckOptions:
   - { key: readability-identifier-naming.MacroDefinitionCase, value: UPPER_CASE}
 endef
 
-.PHONY: .clang-tidy
 .clang-tidy:
-	@echo '$(subst $(newline),\n,${CLANG_TIDY_CONTENT})' | tee $@
+	@echo '$(subst $(newline),\n,$(CLANG_TIDY_CONTENT))' | tee $@
 
 clang-format: .clang-format
 	clang-format --verbose -i $(SOURCES) $(HEADERS) 2>&1
@@ -272,7 +271,7 @@ UseTab: ForIndentation
 endef
 
 .clang-format:
-	@echo '$(subst $(newline),\n,${CLANG_FORMAT_CONTENT})' | tee $@
+	@echo '$(subst $(newline),\n,$(CLANG_FORMAT_CONTENT))' | tee $@
 
 setup: .clangd
 
