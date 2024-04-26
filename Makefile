@@ -22,6 +22,11 @@ HEADERS  = $(shell find $(INCLUDE_DIRS) \
 
 GITIGNORE := $(OBJ_DIR) $(TARGETS_DIR) $(TARGETS)
 
+define newline
+
+
+endef
+
 # }}}
 
 # Variables - Documentation {{{
@@ -153,13 +158,121 @@ ifneq ($(shell pwd | grep --count ' '),0)
 	-exit 1
 endif
 
-# TODO: add .clang-tidy generator rule
-clang-tidy:
+clang-tidy: .clang-tidy
 	parallel --jobs 4 --group clang-tidy --quiet ::: $(SOURCES)
 
-# TODO: add .clang-format generator rule
-clang-format:
+define CLANG_TIDY_CONTENT
+Checks: -*,readability-identifier-naming
+CheckOptions:
+  - { key: readability-identifier-naming.EnumCase,            value: CamelCase}
+  - { key: readability-identifier-naming.EnumConstantCase,    value: UPPER_CASE}
+  - { key: readability-identifier-naming.FunctionCase,        value: camelBack}
+  - { key: readability-identifier-naming.StructCase,          value: CamelCase}
+  - { key: readability-identifier-naming.MacroDefinitionCase, value: UPPER_CASE}
+endef
+
+.PHONY: .clang-tidy
+.clang-tidy:
+	@echo '$(subst $(newline),\n,${CLANG_TIDY_CONTENT})' | tee $@
+
+clang-format: .clang-format
 	clang-format --verbose -i $(SOURCES) $(HEADERS) 2>&1
+
+define CLANG_FORMAT_CONTENT
+---
+AlignAfterOpenBracket: Align
+AlignArrayOfStructures: Right
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: true
+  AlignCompound: true
+  PadOperators: true
+AlignConsecutiveBitFields:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: true
+  AlignCompound: true
+  PadOperators: true
+AlignConsecutiveDeclarations: false
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: true
+  AlignCompound: true
+  PadOperators: true
+AlignOperands: Align
+# AlignTrailingComments:
+#   Kind: Always
+#   OverEmptyLines: 2
+AlignEscapedNewlines: Left
+AllowAllArgumentsOnNextLine: false
+AllowAllConstructorInitializersOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLoopsOnASingleLine: true
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  BeforeElse: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterFunction: true
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakBeforeBinaryOperators: All
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+ColumnLimit: 80
+IncludeBlocks: Regroup
+IndentCaseLabels: false
+IndentPPDirectives: BeforeHash
+IndentWidth: 8
+IndentWrappedFunctionNames: false
+JavaScriptQuotes: Single
+JavaScriptWrapImports: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+Language: Cpp
+MaxEmptyLinesToKeep: 2
+PointerAlignment: Right
+ReflowComments: false
+SortIncludes: true
+SortUsingDeclarations: true
+SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceInEmptyParentheses: false
+SpacesInCStyleCastParentheses: false
+SpacesInContainerLiterals: true
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+TabWidth: 8
+UseTab: ForIndentation
+endef
+
+.clang-format:
+	@echo '$(subst $(newline),\n,${CLANG_FORMAT_CONTENT})' | tee $@
 
 setup: .clangd
 
