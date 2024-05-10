@@ -410,12 +410,10 @@ $(OBJ_DIR)/%.cpp.o: %.cpp $(HEADERS)
 
 # TODO: Add Parallel Compilation
 
-_SOURCES = hello-world
-hello-world: $(_SOURCES:%=$(OBJ_DIR)/$(SRC_DIR)/%.c.o)
+hello-world: $(addprefix $(OBJ_DIR)/$(SRC_DIR)/, $(addsuffix .c.o, hello-world))
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-_SOURCES = factorial
-factorial: $(_SOURCES:%=$(OBJ_DIR)/$(SRC_DIR)/%.cpp.o)
+factorial: $(addprefix $(OBJ_DIR)/$(SRC_DIR)/, $(addsuffix .cpp.o, factorial))
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
 # }}}
