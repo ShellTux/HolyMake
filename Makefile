@@ -73,10 +73,24 @@ GITIGNORE += $(VENV)
 
 # Variables - Compilation {{{
 
-CC     = gcc
-CCP    = g++
-CFLAGS = -Wall -Wextra -Werror
-LINKS  =
+# Program for compiling C programs; default cc
+CC       = gcc
+# Program for compiling C++ programs; default g++
+CXX      = g++
+# Extra flags to give to the C compiler
+CFLAGS   = -Wall -Wextra -Werror
+# Extra flags to give to the C++ compiler
+CXXFLAGS = -Wall -Wextra -Werror
+# Extra flags to give to the C preprocessor
+CPPFLAGS =
+# Extra flags to give to compilers when they are supposed to invoke the linker
+LDFLAGS  =
+
+CCACHE_EXISTS := $(shell ccache -V)
+ifdef CCACHE_EXISTS
+    CC        := ccache $(CC)
+    CXX       := ccache $(CXX)
+endif
 
 CFLAGS += -Wno-error=unused-parameter
 CFLAGS += -Wno-error=unused-variable
@@ -109,9 +123,9 @@ gdb:
 
 .PHONY: debug
 debug: MAKEFLAGS += --always-make --no-print-directory
-debug: CFLAGS += -DDEBUG=1
+debug: CPPFLAGS += -DDEBUG=1
 debug:
-	$(MAKE) $(MAKEFLAGS) CFLAGS="$(CFLAGS)" $(TARGETS)
+	$(MAKE) $(MAKEFLAGS) CPPFLAGS="$(CPPFLAGS)" $(TARGETS)
 
 .PHONY: rebuild
 rebuild: MAKEFLAGS += --always-make --no-print-directory
@@ -329,7 +343,7 @@ make.snippets: Makefile
 	sed -i '0,/onehalfdark/s//$${14}/' $@
 	sed -i '0,/$(VENV)/s//$${15:$(VENV)}/' $@
 	sed -i '0,/$(CC)/s//$${16:$(CC)}/' $@
-	sed -i '0,/$(CCP)/s//$${17:$(CCP)}/' $@
+	sed -i '0,/$(CXX)/s//$${17:$(CXX)}/' $@
 	sed -i '0,/-Wall -Wextra -Werror/s//$${18:-Wall -Wextra -Werror}/' $@
 	# TODO: Add Links
 	sed -i '0,/$(OPEN)/s//$${19:$(OPEN)}/' $@
@@ -392,17 +406,17 @@ $(OBJ_DIR)/%.cpp.o: %.cpp $(HEADERS)
 	@printf "########################\n"
 	@printf "\033[0m\n"
 	mkdir --parents "$$(dirname "$@")"
-	$(CCP) $(CFLAGS) -c -o $@ $<
+	$(CXX) $(CFLAGS) -c -o $@ $<
 
 # TODO: Add Parallel Compilation
 
 _SOURCES = hello-world
 hello-world: $(_SOURCES:%=$(OBJ_DIR)/$(SRC_DIR)/%.c.o)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 _SOURCES = factorial
 factorial: $(_SOURCES:%=$(OBJ_DIR)/$(SRC_DIR)/%.cpp.o)
-	$(CCP) $(CFLAGS) -o $@ $^
+	$(CXX) -o $@ $^ $(LDFLAGS)
 
 # }}}
 
