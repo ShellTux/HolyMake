@@ -98,6 +98,7 @@ OPEN = xdg-open
 
 # Rules - Custom {{{
 
+.PHONY: all
 all: warning $(VENV) $(DOCUMENTS) $(PRESENTATIONS) $(TARGETS)
 
 .PHONY: gdb
@@ -121,6 +122,7 @@ rebuild:
 run: warning $(TARGETS)
 	@for target in $(TARGETS) ; do echo ./$$target ; ./$$target ; done
 
+.PHONY: clean-ipcs
 clean-ipcs:
 ifeq ($(shell echo "$$(id --user) < 1000" | bc), 0)
 	ipcrm --all
@@ -158,6 +160,7 @@ ifneq ($(shell pwd | grep --count ' '),0)
 	-exit 1
 endif
 
+.PHONY: clang-tidy
 clang-tidy: .clang-tidy
 	parallel --jobs 4 --group clang-tidy --quiet ::: $(SOURCES)
 
@@ -171,9 +174,11 @@ CheckOptions:
   - { key: readability-identifier-naming.MacroDefinitionCase, value: UPPER_CASE}
 endef
 
+.PHONY: .clang-tidy
 .clang-tidy:
 	@echo '$(subst $(newline),\n,$(CLANG_TIDY_CONTENT))' | tee $@
 
+.PHONY: clang-format
 clang-format: .clang-format
 	clang-format --verbose -i $(SOURCES) $(HEADERS) 2>&1
 
@@ -273,9 +278,9 @@ endef
 .clang-format:
 	@echo '$(subst $(newline),\n,$(CLANG_FORMAT_CONTENT))' | tee $@
 
+.PHONY: setup
 setup: .clangd
 
-.PHONY: .clangd
 .clangd: GITIGNORE += .clangd
 .clangd: .gitignore
 	rm --force $@
@@ -347,6 +352,7 @@ clean:
 	rm --recursive --force $(OBJ_DIR) $(VENV)
 	find . -type f -name '*.pyc' -delete
 
+.PHONY: help
 help:
 	man
 
@@ -360,9 +366,9 @@ $(PRESENTATIONS): %.pdf: $(DOCS_DIR)/%.md
 $(DOCUMENTS): %.pdf: $(DOCS_DIR)/%.md
 	pandoc $(PANDOC_OPTS) --output=$@ $<
 
+.PHONY: archive
 archive: $(ARCHIVE)
 
-.PHONY: $(ARCHIVE)
 $(ARCHIVE): $(DOCUMENTS) $(PRESENTATIONS)
 	git archive --output=$@ $(^:%=--add-file=%) HEAD
 
