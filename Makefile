@@ -4,7 +4,7 @@
 
 ASSETS_DIR      = assets
 DOCS_DIR        = docs
-INCLUDE_DIRS    = $(shell pwd)/include
+INCLUDE_DIRS    = include
 OBJ_DIR         = obj
 PANDOC_DATA_DIR = pandoc
 SRC_DIR         = src
