@@ -1,0 +1,47 @@
+name: Make CI
+
+on:
+  push:
+    branches:
+      - "main"
+      - "**"
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  C/C++:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Generate Makefile
+      run: make --file=makefile Makefile
+    - name: Targets Compilation
+      run: make --file=Makefile --jobs=4 --output-sync=target targets
+    - name: Gdb Compilation
+      run: make --file=Makefile --jobs=4 --output-sync=target gdb
+    - name: Debug Compilation
+      run: make --file=Makefile --jobs=4 --output-sync=target debug
+  Python:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Generate Makefile
+      run: make --file=makefile Makefile
+    - name: Python Virtual Environment
+      run: make --file=Makefile venv
+  Documentation:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Generate Makefile
+      run: make --file=makefile Makefile
+    - name: Generate all documents
+      run: make --file=Makefile documents
+  Archive:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Generate Makefile
+      run: make --file=makefile Makefile
+    - name: Archive repo
+      run: make --file=Makefile archive
