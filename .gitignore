@@ -9,6 +9,8 @@ presentation.pdf
 venv
 .clangd
 archive.zip
+*[mM]akefile*
+make.snippets
 
 # Created by https://www.toptal.com/developers/gitignore/api/c
 # Edit at https://www.toptal.com/developers/gitignore?templates=c
